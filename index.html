@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Moni夢霓～今天吃什麼？</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Noto+Serif+TC:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold: #c9a84c;
+  --gold-light: #e8c97a;
+  --gold-pale: #f5e6b8;
+  --dark: #0d0b08;
+  --dark-2: #141209;
+  --dark-3: #1c1810;
+  --dark-4: #242016;
+  --cream: #f0e6cc;
+  --cream-dim: rgba(240,230,204,0.7);
+  --cream-faint: rgba(240,230,204,0.15);
+  --gold-glow: rgba(201,168,76,0.25);
+  --gold-glow-strong: rgba(201,168,76,0.45);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--dark);
+  color: var(--cream);
+  font-family: 'Noto Serif TC', serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  cursor: default;
+}
+
+/* ── GRAIN OVERLAY ── */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+/* ── BACKGROUND ── */
+.bg-layer {
+  position: fixed; inset: 0; z-index: 0;
+  background:
+    radial-gradient(ellipse 60% 50% at 20% 20%, rgba(201,168,76,0.06) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 60% at 80% 80%, rgba(201,168,76,0.05) 0%, transparent 70%),
+    linear-gradient(160deg, #0d0b08 0%, #141209 40%, #0f0d09 100%);
+  pointer-events: none;
+}
+
+/* 背景圖 */
+.bg-image {
+  position: fixed; inset: 0; z-index: 0;
+  background: url('background.png') center 20%/cover no-repeat;
+  opacity: 0.18;
+  pointer-events: none;
+  display: block;
+}
+
+/* ── GOLD LINES DECO ── */
+.deco-line {
+  display: block;
+  width: 80px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  margin: 0 auto;
+}
+.deco-line-v {
+  display: block;
+  width: 1px; height: 60px;
+  background: linear-gradient(180deg, transparent, var(--gold-light), transparent);
+  margin: 0 auto;
+}
+
+/* ── WRAPPER ── */
+.page { position: relative; z-index: 1; }
+
+/* ══════════════════════════════
+   HERO SECTION
+══════════════════════════════ */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 6rem 1.5rem 3rem;
+  text-align: center;
+  position: relative;
+}
+
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 10px;
+  border: 0.5px solid rgba(201,168,76,0.4);
+  border-radius: 99px;
+  padding: 6px 20px;
+  font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--gold); font-family: 'Cormorant Garamond', serif; font-weight: 300;
+  margin-bottom: 2rem;
+  animation: fadeUp 0.8s ease both;
+}
+.hero-badge::before, .hero-badge::after {
+  content: '✦'; font-size: 8px; color: var(--gold-light);
+}
+
+.hero-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2.4rem, 6vw, 4.2rem);
+  font-weight: 400; line-height: 1.15;
+  color: var(--cream);
+  animation: fadeUp 0.8s 0.1s ease both;
+  letter-spacing: 0.02em;
+}
+.hero-title em {
+  font-style: italic;
+  color: var(--gold-light);
+  display: block;
+}
+
+.hero-subtitle {
+  margin-top: 1.2rem;
+  font-size: 14px; letter-spacing: 0.12em;
+  color: var(--cream-dim); font-weight: 300;
+  animation: fadeUp 0.8s 0.2s ease both;
+}
+
+.scroll-hint {
+  position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  animation: fadeUp 1s 0.8s ease both;
+}
+.scroll-hint span { font-size: 10px; letter-spacing: 0.2em; color: rgba(201,168,76,0.5); text-transform: uppercase; }
+.scroll-arrow {
+  width: 1px; height: 40px;
+  background: linear-gradient(180deg, var(--gold), transparent);
+  animation: scrollPulse 2s ease infinite;
+}
+@keyframes scrollPulse { 0%,100%{opacity:0.3;transform:scaleY(1)} 50%{opacity:1;transform:scaleY(1.1)} }
+
+/* ══════════════════════════════
+   SPINNER SECTION
+══════════════════════════════ */
+.spinner-section {
+  padding: 5rem 1.5rem;
+  max-width: 1000px; margin: 0 auto;
+}
+
+.section-header {
+  text-align: center; margin-bottom: 3.5rem;
+}
+.section-tag {
+  font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase;
+  color: var(--gold); font-family: 'Cormorant Garamond', serif;
+  display: block; margin-bottom: 0.8rem;
+}
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+  font-weight: 400; color: var(--cream);
+}
+
+/* ── SPINNER LAYOUT ── */
+.spinner-layout {
+  display: grid;
+  grid-template-columns: 1fr 340px 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+@media(max-width:768px) {
+  .spinner-layout { grid-template-columns: 1fr; }
+  .panel-left { order: 2; }
+  .panel-center { order: 1; }
+  .panel-right { order: 3; }
+}
+
+/* ── WHEEL ── */
+.panel-center { display: flex; flex-direction: column; align-items: center; gap: 1.5rem; }
+
+.wheel-frame {
+  position: relative; width: 300px; height: 300px;
+}
+.wheel-ring {
+  position: absolute; inset: -8px;
+  border-radius: 50%;
+  border: 1px solid rgba(201,168,76,0.3);
+  box-shadow: 0 0 30px var(--gold-glow), inset 0 0 20px rgba(0,0,0,0.5);
+  pointer-events: none;
+}
+.wheel-ring::before {
+  content: '';
+  position: absolute; inset: -6px;
+  border-radius: 50%;
+  border: 0.5px solid rgba(201,168,76,0.15);
+}
+.wheel-pointer {
+  position: absolute; top: -18px; left: 50%; transform: translateX(-50%);
+  z-index: 10;
+  filter: drop-shadow(0 0 6px var(--gold));
+}
+.wheel-pointer svg { display: block; }
+#wheel-canvas {
+  border-radius: 50%;
+  display: block;
+  box-shadow: 0 0 60px rgba(0,0,0,0.8);
+}
+
+/* ── FOOD INPUT PANEL ── */
+.glass-panel {
+  background: rgba(28,24,16,0.7);
+  border: 0.5px solid rgba(201,168,76,0.2);
+  border-radius: 12px;
+  padding: 1.4rem;
+  backdrop-filter: blur(12px);
+}
+
+.panel-label {
+  font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase;
+  color: var(--gold); display: block; margin-bottom: 1rem;
+}
+
+.food-input-row {
+  display: flex; gap: 8px; margin-bottom: 1rem;
+}
+.food-input-row input {
+  flex: 1; padding: 8px 12px;
+  background: rgba(255,255,255,0.04);
+  border: 0.5px solid rgba(201,168,76,0.25);
+  border-radius: 6px;
+  color: var(--cream); font-size: 14px;
+  font-family: 'Noto Serif TC', serif;
+  outline: none; transition: border-color 0.2s;
+}
+.food-input-row input:focus { border-color: var(--gold); }
+.food-input-row input::placeholder { color: rgba(240,230,204,0.25); }
+
+.btn-add {
+  padding: 8px 14px;
+  background: rgba(201,168,76,0.1);
+  border: 0.5px solid rgba(201,168,76,0.4);
+  border-radius: 6px;
+  color: var(--gold); font-size: 18px; line-height: 1;
+  cursor: pointer; transition: all 0.2s;
+  font-family: sans-serif;
+}
+.btn-add:hover { background: rgba(201,168,76,0.2); box-shadow: 0 0 12px var(--gold-glow); }
+
+.food-tags {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  max-height: 140px; overflow-y: auto;
+}
+.food-tag {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 10px; border-radius: 99px;
+  font-size: 12px; font-weight: 300;
+  border: 0.5px solid rgba(201,168,76,0.3);
+  background: rgba(201,168,76,0.07);
+  color: var(--cream-dim);
+  transition: all 0.2s;
+}
+.food-tag:hover { border-color: rgba(201,168,76,0.6); color: var(--cream); }
+.tag-del { cursor: pointer; color: rgba(201,168,76,0.4); font-size: 11px; transition: color 0.15s; }
+.tag-del:hover { color: var(--gold); }
+
+.btn-reset {
+  margin-top: 0.8rem;
+  width: 100%; padding: 7px;
+  background: transparent;
+  border: 0.5px solid rgba(201,168,76,0.15);
+  border-radius: 6px;
+  color: rgba(201,168,76,0.4); font-size: 11px; letter-spacing: 0.1em;
+  cursor: pointer; font-family: 'Noto Serif TC', serif;
+  transition: all 0.2s;
+}
+.btn-reset:hover { border-color: rgba(201,168,76,0.3); color: var(--gold); }
+
+/* ── MESSAGE BOX ── */
+.msg-panel {
+  background: rgba(28,24,16,0.7);
+  border: 0.5px solid rgba(201,168,76,0.2);
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+  backdrop-filter: blur(12px);
+  min-height: 180px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 10px;
+}
+
+.sticker-area {
+  font-size: 0;
+  width: 80px; height: 80px;
+  display: flex; align-items: center; justify-content: center;
+}
+/* 貼圖圖片 — 預設隱藏,JS 切換 */
+.sticker-img {
+  width: 80px; height: 80px;
+  object-fit: contain;
+  display: none;
+}
+/* 備用 emoji(沒有貼圖時顯示)*/
+.sticker-emoji { font-size: 52px; line-height: 1; }
+.sticker-area.animate .sticker-emoji,
+.sticker-area.animate .sticker-img {
+  animation: stickerBounce 0.5s ease infinite alternate;
+}
+@keyframes stickerBounce {
+  from { transform: scale(1) rotate(-4deg); }
+  to   { transform: scale(1.12) rotate(4deg); }
+}
+
+.msg-text {
+  font-size: 13px; line-height: 1.8;
+  color: var(--cream-dim); font-weight: 300;
+  white-space: pre-line;
+}
+.msg-result {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px; font-style: italic;
+  color: var(--gold-light);
+  text-shadow: 0 0 20px var(--gold-glow-strong);
+}
+
+/* ── SPIN & EAT BUTTONS ── */
+.btn-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+.btn-spin {
+  position: relative; overflow: hidden;
+  padding: 14px 36px;
+  background: linear-gradient(135deg, rgba(201,168,76,0.15), rgba(201,168,76,0.08));
+  border: 1px solid var(--gold);
+  border-radius: 8px;
+  color: var(--gold-light);
+  font-size: 16px; letter-spacing: 0.08em;
+  font-family: 'Noto Serif TC', serif; font-weight: 400;
+  cursor: pointer; transition: all 0.3s;
+  box-shadow: 0 0 20px rgba(201,168,76,0.1);
+}
+.btn-spin::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, transparent 30%, rgba(201,168,76,0.15) 50%, transparent 70%);
+  transform: translateX(-100%);
+  transition: transform 0.5s;
+}
+.btn-spin:hover::before { transform: translateX(100%); }
+.btn-spin:hover {
+  box-shadow: 0 0 40px rgba(201,168,76,0.3), 0 0 80px rgba(201,168,76,0.1);
+  transform: translateY(-1px);
+}
+.btn-spin:active { transform: scale(0.98); }
+.btn-spin:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+
+.btn-eat {
+  padding: 14px 28px;
+  background: transparent;
+  border: 0.5px solid rgba(201,168,76,0.35);
+  border-radius: 8px;
+  color: var(--cream-dim); font-size: 14px; letter-spacing: 0.06em;
+  font-family: 'Noto Serif TC', serif;
+  cursor: pointer; transition: all 0.3s;
+  display: none;
+}
+.btn-eat:hover {
+  border-color: var(--gold);
+  color: var(--gold-light);
+  box-shadow: 0 0 20px var(--gold-glow);
+}
+
+/* ══════════════════════════════
+   VIDEO MODAL (新增)
+══════════════════════════════ */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.92);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  backdrop-filter: blur(8px);
+  animation: modalFadeIn 0.4s ease;
+}
+.modal-overlay.show {
+  display: flex;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-content {
+  position: relative;
+  max-width: 90vw;
+  max-height: 85vh;
+  animation: modalSlideUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes modalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-video-wrapper {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(201,168,76,0.3);
+  box-shadow: 0 0 80px rgba(201,168,76,0.15), 0 30px 80px rgba(0,0,0,0.8);
+}
+
+.modal-video-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  box-shadow: inset 0 0 60px rgba(0,0,0,0.4);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.modal-video {
+  display: block;
+  max-width: 100%;
+  max-height: 85vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+.modal-badge {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 24px;
+  background: rgba(13, 11, 8, 0.85);
+  border: 0.5px solid rgba(201,168,76,0.4);
+  border-radius: 99px;
+  font-size: 11px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--gold-light);
+  font-family: 'Cormorant Garamond', serif;
+  backdrop-filter: blur(12px);
+  z-index: 2;
+  animation: badgePulse 2s ease infinite;
+}
+
+.modal-badge::before,
+.modal-badge::after {
+  content: '✦';
+  font-size: 9px;
+  color: var(--gold);
+}
+
+@keyframes badgePulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(201,168,76,0.2); }
+  50% { box-shadow: 0 0 40px rgba(201,168,76,0.4); }
+}
+
+.modal-caption {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 28px;
+  background: rgba(13, 11, 8, 0.9);
+  border: 0.5px solid rgba(201,168,76,0.25);
+  border-radius: 99px;
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  color: var(--gold-light);
+  font-family: 'Noto Serif TC', serif;
+  font-style: italic;
+  backdrop-filter: blur(12px);
+  text-align: center;
+  white-space: nowrap;
+  z-index: 2;
+}
+
+.modal-close {
+  position: absolute;
+  top: -50px;
+  right: 0;
+  width: 44px;
+  height: 44px;
+  background: rgba(28, 24, 16, 0.8);
+  border: 0.5px solid rgba(201,168,76,0.3);
+  border-radius: 50%;
+  color: var(--gold);
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+  backdrop-filter: blur(12px);
+}
+
+.modal-close:hover {
+  background: rgba(201,168,76,0.15);
+  border-color: var(--gold);
+  transform: rotate(90deg);
+  box-shadow: 0 0 20px rgba(201,168,76,0.3);
+}
+
+@media(max-width: 768px) {
+  .modal-close {
+    top: -60px;
+    right: 50%;
+    transform: translateX(50%);
+  }
+  .modal-close:hover {
+    transform: translateX(50%) rotate(90deg);
+  }
+  .modal-caption {
+    font-size: 11px;
+    padding: 10px 20px;
+    white-space: normal;
+    max-width: 90%;
+  }
+}
+
+/* ══════════════════════════════
+   DIVIDER
+══════════════════════════════ */
+.divider {
+  max-width: 400px; margin: 0 auto;
+  display: flex; align-items: center; gap: 1.5rem;
+  padding: 2rem 1.5rem;
+}
+.divider-line { flex: 1; height: 0.5px; background: linear-gradient(90deg, transparent, rgba(201,168,76,0.3), transparent); }
+.divider-icon { color: var(--gold); font-size: 12px; letter-spacing: 0.2em; white-space: nowrap; }
+
+/* ══════════════════════════════
+   SOCIAL SECTION
+══════════════════════════════ */
+.social-section {
+  padding: 3rem 1.5rem 6rem;
+  text-align: center;
+}
+
+.social-tagline {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+  font-weight: 300; font-style: italic;
+  color: var(--cream-dim); margin-bottom: 2.5rem;
+  letter-spacing: 0.05em;
+}
+
+.social-links {
+  display: flex; flex-wrap: wrap;
+  justify-content: center; gap: 12px;
+}
+
+.social-link {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 22px;
+  border: 0.5px solid rgba(201,168,76,0.25);
+  border-radius: 99px;
+  color: var(--cream-dim); font-size: 13px; letter-spacing: 0.08em;
+  text-decoration: none;
+  font-family: 'Noto Serif TC', serif;
+  transition: all 0.3s;
+  background: rgba(201,168,76,0.04);
+}
+.social-link:hover {
+  border-color: var(--gold);
+  color: var(--gold-light);
+  background: rgba(201,168,76,0.1);
+  box-shadow: 0 0 20px var(--gold-glow);
+  transform: translateY(-2px);
+}
+.social-icon { width: 16px; height: 16px; fill: currentColor; flex-shrink: 0; }
+
+/* ══════════════════════════════
+   FOOTER
+══════════════════════════════ */
+footer {
+  border-top: 0.5px solid rgba(201,168,76,0.1);
+  padding: 2rem 1.5rem;
+  text-align: center;
+  font-size: 11px; letter-spacing: 0.15em;
+  color: rgba(240,230,204,0.2);
+}
+footer span { color: rgba(201,168,76,0.3); }
+
+/* ══════════════════════════════
+   ANIMATIONS
+══════════════════════════════ */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes spinGlow {
+  0%,100% { box-shadow: 0 0 20px rgba(201,168,76,0.1); }
+  50%      { box-shadow: 0 0 50px rgba(201,168,76,0.4); }
+}
+.spinning .wheel-ring { animation: spinGlow 0.8s ease infinite; }
+
+/* ══════════════════════════════
+   SCROLLBAR
+══════════════════════════════ */
+.food-tags::-webkit-scrollbar { width: 3px; }
+.food-tags::-webkit-scrollbar-track { background: transparent; }
+.food-tags::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.3); border-radius: 99px; }
+</style>
+</head>
+<body>
+
+<div class="bg-layer"></div>
+<div class="bg-image"></div>
+<div class="page">
+
+<!-- ══ HERO ══ -->
+<section class="hero">
+  <div class="hero-badge">Moni 夢霓 出品</div>
+  <h1 class="hero-title">
+    今天,<em>吃什麼?</em>
+  </h1>
+  <p class="hero-subtitle">讓命運替你決定 · 感謝世界 · 感謝自己</p>
+  <div style="margin-top:2rem; animation: fadeUp 0.8s 0.4s ease both;">
+    <span class="deco-line"></span>
+  </div>
+
+  <div class="scroll-hint">
+    <span>開始轉吧</span>
+    <div class="scroll-arrow"></div>
+  </div>
+</section>
+
+<!-- ══ SPINNER ══ -->
+<section class="spinner-section">
+  <div class="section-header">
+    <span class="section-tag">✦ 命運轉盤 ✦</span>
+    <h2 class="section-title">旋轉,決定今日餐點</h2>
+  </div>
+
+  <div class="spinner-layout">
+
+    <!-- 左側:食物輸入 -->
+    <div class="panel-left">
+      <div class="glass-panel">
+        <span class="panel-label">✦ 我想吃的</span>
+        <div class="food-input-row">
+          <input id="food-input" type="text" placeholder="輸入食物名稱…" maxlength="12"
+            onkeydown="if(event.key==='Enter') addFood()" />
+          <button class="btn-add" onclick="addFood()" title="新增">＋</button>
+        </div>
+        <div class="food-tags" id="food-tags"></div>
+        <button class="btn-reset" onclick="resetDefault()">↺ 還原預設清單</button>
+      </div>
+    </div>
+
+    <!-- 中間:轉盤 -->
+    <div class="panel-center">
+      <div class="wheel-frame" id="wheel-frame">
+        <div class="wheel-ring"></div>
+        <div class="wheel-pointer">
+          <svg width="24" height="28" viewBox="0 0 24 28">
+            <polygon points="12,2 22,22 12,18 2,22" fill="#c9a84c" stroke="none"/>
+            <polygon points="12,2 22,22 12,18 2,22" fill="none" stroke="rgba(255,220,100,0.4)" stroke-width="1"/>
+          </svg>
+        </div>
+        <canvas id="wheel-canvas" width="300" height="300"></canvas>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-spin" id="spin-btn" onclick="spin()">✦ 旋轉命運 ✦</button>
+        <button class="btn-eat" id="eat-btn" onclick="eat()">🍽 開動!</button>
+      </div>
+    </div>
+
+    <!-- 右側:訊息框 -->
+    <div class="panel-right">
+      <div class="msg-panel" id="msg-panel">
+        <div class="sticker-area" id="sticker-area">
+          <img class="sticker-img" id="sticker-img" src="" alt="" />
+          <span class="sticker-emoji" id="sticker-emoji">✨</span>
+        </div>
+        <p class="msg-text" id="msg-text">按下旋轉<br>讓命運替你決定今天的餐點</p>
+        <div class="msg-result" id="msg-result" style="display:none"></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══ VIDEO MODAL (新增) ══ -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeModal()" aria-label="關閉">✕</button>
+    <div class="modal-video-wrapper">
+      <div class="modal-badge">✦ 開動囉 ✦</div>
+      <video class="modal-video" id="modal-video" autoplay loop muted playsinline>
+        <source src="eating.mp4" type="video/mp4">
+        <source src="eating.webm" type="video/webm">
+        您的瀏覽器不支援影片播放
+      </video>
+      <div class="modal-caption">感謝世界 · 感謝自己 · 今天我也好好吃飯</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SOCIAL ══ -->
+<section class="social-section">
+  <div class="divider">
+    <div class="divider-line"></div>
+    <div class="divider-icon">✦</div>
+    <div class="divider-line"></div>
+  </div>
+
+  <p class="social-tagline">來找夢霓,一起好好吃飯 ✦</p>
+
+  <div class="social-links">
+    <a class="social-link" href="#" target="_blank" rel="noopener">
+      <svg class="social-icon" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+      Instagram
+    </a>
+    <a class="social-link" href="#" target="_blank" rel="noopener">
+      <svg class="social-icon" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+      YouTube
+    </a>
+    <a class="social-link" href="#" target="_blank" rel="noopener">
+      <svg class="social-icon" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V9.18a8.17 8.17 0 004.77 1.52V7.25a4.85 4.85 0 01-1-.56z"/></svg>
+      TikTok
+    </a>
+    <a class="social-link" href="#" target="_blank" rel="noopener">
+      <svg class="social-icon" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.213 5.567zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      X(Twitter)
+    </a>
+    <a class="social-link" href="#" target="_blank" rel="noopener">
+      <svg class="social-icon" viewBox="0 0 24 24"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+      脆(Threads)
+    </a>
+    <a class="social-link" href="#" target="_blank" rel="noopener">
+      <svg class="social-icon" viewBox="0 0 24 24"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714z"/></svg>
+      圖奇(Twitch)
+    </a>
+  </div>
+</section>
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <span>✦</span> &nbsp; Moni 夢霓 · 今天吃什麼 &nbsp; <span>✦</span>
+  <br><br>
+  <span style="font-size:10px; opacity:0.6">用愛製作 · 願你每天都好好吃飯</span>
+</footer>
+
+</div><!-- .page -->
+
+<script>
+/* ══════════════════════════════
+   設定區
+══════════════════════════════ */
+const STICKERS = {
+  idle:   { img: '',                emoji: '✨' },
+  spin:   { img: 'stickers/spin.gif',   emoji: '🌀' },
+  result: { img: 'stickers/result.gif', emoji: '🎉' },
+  eat:    { img: 'stickers/eat.gif',    emoji: '🥳' },
+};
+const AUDIO = {
+  spin:   'sounds/spinning.mp3',
+  result: 'sounds/result.mp3',
+  eat:    'sounds/eat.mp3',
+};
+const TTS = {
+  spin:   '今天要吃什麼呢?要吃香噴噴的白飯還是肉肉料理呢?香酥的炸物也很吸引人呢!',
+  result: '決定今天吃這個!',
+  eat:    '感謝世界感謝自己,今天我也好好吃飯,我好棒!',
+};
+
+/* ── 用餐影片路徑 (修改這裡) ── */
+const EATING_VIDEO = 'eating.mp4'; // 你的影片檔名
+
+/* ══════════════════════════════
+   轉盤顏色
+══════════════════════════════ */
+const WHEEL_COLORS = [
+  ['#3d2e0a','#e8c97a'],['#1a1508','#c9a84c'],
+  ['#4a380c','#f5e6b8'],['#251c07','#e8c97a'],
+  ['#5a4510','#c9a84c'],['#1c1509','#f5e6b8'],
+  ['#3a2c0c','#e8c97a'],['#2a2009','#c9a84c'],
+  ['#4e3b0e','#f5e6b8'],['#1e1707','#e8c97a'],
+  ['#42320b','#c9a84c'],['#281e08','#f5e6b8'],
+];
+
+const DEFAULT_FOODS = ['滷肉飯','雞腿便當','牛肉麵','炸雞排','壽司','火鍋','拉麵','燒肉','水餃','義大利麵','咖哩飯','鹽酥雞'];
+let foods = [...DEFAULT_FOODS];
+let spinning = false;
+let currentAngle = 0;
+let result = null;
+
+/* ── 音訊 ── */
+const audioCache = {};
+function playAudio(key) {
+  const src = AUDIO[key];
+  if (!src) { useTTS(key); return; }
+  if (!audioCache[key]) audioCache[key] = new Audio(src);
+  const a = audioCache[key];
+  a.currentTime = 0;
+  a.play().catch(() => useTTS(key));
+}
+function useTTS(key) {
+  if (!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(TTS[key] || '');
+  u.lang = 'zh-TW'; u.rate = 0.95; u.pitch = 1.05;
+  const voices = window.speechSynthesis.getVoices();
+  const tw = voices.find(v => v.lang === 'zh-TW') || voices.find(v => v.lang.startsWith('zh'));
+  if (tw) u.voice = tw;
+  window.speechSynthesis.speak(u);
+}
+
+/* ── 貼圖切換 ── */
+function setSticker(key) {
+  const cfg = STICKERS[key] || STICKERS.idle;
+  const area = document.getElementById('sticker-area');
+  const img  = document.getElementById('sticker-img');
+  const emoji= document.getElementById('sticker-emoji');
+  area.classList.remove('animate');
+  void area.offsetWidth;
+  area.classList.add('animate');
+  if (cfg.img) {
+    img.src = cfg.img + '?t=' + Date.now();
+    img.style.display = 'block';
+    emoji.style.display = 'none';
+  } else {
+    emoji.textContent = cfg.emoji;
+    emoji.style.display = 'block';
+    img.style.display = 'none';
+  }
+}
+
+/* ── 訊息 ── */
+function setMsg(text, resultName) {
+  document.getElementById('msg-text').innerHTML = text;
+  const r = document.getElementById('msg-result');
+  if (resultName) { r.textContent = resultName; r.style.display = 'block'; }
+  else r.style.display = 'none';
+}
+
+/* ── 轉盤繪製 ── */
+const canvas = document.getElementById('wheel-canvas');
+const ctx = canvas.getContext('2d');
+const CX = 150, CY = 150, R = 138;
+
+function drawWheel() {
+  ctx.clearRect(0, 0, 300, 300);
+  const n = foods.length;
+  if (n === 0) {
+    ctx.fillStyle = '#1c1810'; ctx.beginPath(); ctx.arc(CX,CY,R,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#c9a84c'; ctx.font = '14px serif'; ctx.textAlign = 'center';
+    ctx.fillText('請新增食物', CX, CY+5);
+    return;
+  }
+  const arc = (Math.PI*2) / n;
+  for (let i = 0; i < n; i++) {
+    const [bg, fg] = WHEEL_COLORS[i % WHEEL_COLORS.length];
+    const start = currentAngle + arc*i - Math.PI/2;
+    const end = start + arc;
+    ctx.beginPath(); ctx.moveTo(CX,CY); ctx.arc(CX,CY,R,start,end); ctx.closePath();
+    ctx.fillStyle = bg; ctx.fill();
+    ctx.strokeStyle = 'rgba(201,168,76,0.25)'; ctx.lineWidth = 1; ctx.stroke();
+
+    ctx.save();
+    ctx.translate(CX, CY); ctx.rotate(start + arc/2);
+    ctx.fillStyle = fg;
+    const label = foods[i];
+    const fs = label.length > 6 ? 11 : label.length > 4 ? 13 : 15;
+    ctx.font = `400 ${fs}px "Noto Serif TC", serif`;
+    ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+    ctx.fillText(label, R - 12, 0);
+    ctx.restore();
+  }
+  ctx.beginPath(); ctx.arc(CX,CY,20,0,Math.PI*2);
+  ctx.fillStyle = '#0d0b08'; ctx.fill();
+  ctx.strokeStyle = 'rgba(201,168,76,0.5)'; ctx.lineWidth = 1; ctx.stroke();
+  ctx.fillStyle = '#c9a84c'; ctx.font = '10px serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText('✦', CX, CY);
+}
+
+/* ── 食物管理 ── */
+function renderTags() {
+  const c = document.getElementById('food-tags');
+  c.innerHTML = '';
+  foods.forEach((f, i) => {
+    const [bg, fg] = WHEEL_COLORS[i % WHEEL_COLORS.length];
+    const tag = document.createElement('div');
+    tag.className = 'food-tag';
+    tag.style.cssText = `background:${bg}; color:${fg}; border-color:rgba(201,168,76,0.2)`;
+    tag.innerHTML = `${f}&thinsp;<span class="tag-del" onclick="removeFood(${i})">✕</span>`;
+    c.appendChild(tag);
+  });
+}
+function addFood() {
+  const inp = document.getElementById('food-input');
+  const v = inp.value.trim();
+  if (!v) return;
+  if (foods.length >= 12) { setMsg('最多 12 個選項喔!'); return; }
+  if (foods.includes(v)) { setMsg('已經有這個了!'); return; }
+  foods.push(v); inp.value = '';
+  renderTags(); drawWheel();
+}
+function removeFood(i) { foods.splice(i,1); renderTags(); drawWheel(); }
+function resetDefault() { foods = [...DEFAULT_FOODS]; renderTags(); drawWheel(); }
+
+/* ── 旋轉 ── */
+function spin() {
+  if (spinning || foods.length < 2) return;
+  spinning = true;
+  document.getElementById('spin-btn').disabled = true;
+  document.getElementById('eat-btn').style.display = 'none';
+  document.getElementById('wheel-frame').classList.add('spinning');
+  result = null;
+
+  setSticker('spin');
+  setMsg('今天要吃什麼呢?\n要吃香噴噴的白飯還是肉肉料理呢?\n香酥的炸物也很吸引人呢!');
+  playAudio('spin');
+
+  const extra = (Math.PI*2) * (6 + Math.random()*4);
+  const target = currentAngle + extra;
+  const duration = 4000 + Math.random()*1500;
+  const t0 = performance.now();
+  const a0 = currentAngle;
+  function ease(t) { return 1 - Math.pow(1-t, 3); }
+
+  (function frame(now) {
+    const p = Math.min((now - t0) / duration, 1);
+    currentAngle = a0 + (target - a0) * ease(p);
+    drawWheel();
+    if (p < 1) { requestAnimationFrame(frame); return; }
+    currentAngle = target;
+    spinning = false;
+    document.getElementById('spin-btn').disabled = false;
+    document.getElementById('wheel-frame').classList.remove('spinning');
+
+    const n = foods.length;
+    const arc = (Math.PI*2) / n;
+    const norm = (((-currentAngle % (Math.PI*2)) + Math.PI*2 + Math.PI/2) % (Math.PI*2));
+    result = foods[Math.floor(norm / arc) % n];
+
+    setSticker('result');
+    setMsg('決定今天吃這個!', result);
+    playAudio('result');
+    document.getElementById('eat-btn').style.display = 'inline-block';
+  })(performance.now());
+}
+
+/* ── 開動 (開啟影片 modal) ── */
+function eat() {
+  setSticker('eat');
+  setMsg('感謝世界感謝自己,\n今天我也好好吃飯,\n我好棒!');
+  playAudio('eat');
+
+  // 顯示影片 modal
+  const modal = document.getElementById('modal-overlay');
+  const video = document.getElementById('modal-video');
+  
+  // 重新載入影片並從頭播放
+  video.currentTime = 0;
+  video.play();
+  
+  modal.classList.add('show');
+  
+  // 防止背景滾動
+  document.body.style.overflow = 'hidden';
+}
+
+/* ── 關閉 Modal ── */
+function closeModal(event) {
+  // 如果點擊的是覆蓋層本身或關閉按鈕
+  if (!event || event.target.id === 'modal-overlay' || event.target.classList.contains('modal-close')) {
+    const modal = document.getElementById('modal-overlay');
+    const video = document.getElementById('modal-video');
+    
+    // 暫停影片
+    video.pause();
+    
+    modal.classList.remove('show');
+    document.body.style.overflow = '';
+  }
+}
+
+// ESC 鍵關閉
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    closeModal();
+  }
+});
+
+/* 初始化 */
+window.speechSynthesis && window.speechSynthesis.getVoices();
+renderTags();
+drawWheel();
+</script>
+</body>
+</html>
