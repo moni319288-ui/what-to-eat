@@ -25,9 +25,8 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-html, body {
-  height: 100%;
-  overflow: hidden;
+html {
+  scroll-behavior: smooth;
 }
 
 body {
@@ -35,6 +34,22 @@ body {
   color: var(--cream);
   font-family: 'Noto Serif TC', serif;
   cursor: default;
+  overflow-x: hidden;
+}
+
+/* 桌面版：不滾動 */
+@media(min-width: 769px) {
+  html, body {
+    height: 100%;
+    overflow: hidden;
+  }
+}
+
+/* 手機版：可以滾動 */
+@media(max-width: 768px) {
+  body {
+    padding-bottom: 0; /* 不需要預留空間 */
+  }
 }
 
 /* ── GRAIN OVERLAY ── */
@@ -68,13 +83,19 @@ body::before {
 .page { 
   position: relative; 
   z-index: 1;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
+}
+
+/* 桌面版佈局 */
+@media(min-width: 769px) {
+  .page {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
 }
 
 /* ══════════════════════════════
-   HEADER (精簡版)
+   HEADER
 ══════════════════════════════ */
 .header {
   text-align: center;
@@ -82,9 +103,15 @@ body::before {
   flex-shrink: 0;
 }
 
+@media(max-width: 768px) {
+  .header {
+    padding: 1.5rem 1rem 1rem;
+  }
+}
+
 .header-title {
   font-family: 'Playfair Display', serif;
-  font-size: clamp(1.6rem, 4vw, 2.2rem);
+  font-size: clamp(1.8rem, 5vw, 2.2rem);
   font-weight: 400;
   line-height: 1.2;
   color: var(--cream);
@@ -97,17 +124,17 @@ body::before {
 }
 
 .header-subtitle {
-  margin-top: 0.2rem;
-  font-size: 10px;
+  margin-top: 0.3rem;
+  font-size: 11px;
   letter-spacing: 0.12em;
   color: var(--cream-dim);
   font-weight: 300;
 }
 
 /* ══════════════════════════════
-   SPINNER SECTION (單頁版)
+   MAIN CONTENT
 ══════════════════════════════ */
-.spinner-section {
+.main-content {
   flex: 1;
   display: flex;
   align-items: center;
@@ -117,13 +144,21 @@ body::before {
   min-height: 0;
 }
 
-.spinner-container {
+@media(max-width: 768px) {
+  .main-content {
+    display: block;
+    padding: 0;
+    overflow: visible;
+  }
+}
+
+.content-container {
   width: 100%;
   max-width: 1200px;
 }
 
-/* ── SPINNER LAYOUT ── */
-.spinner-layout {
+/* ── DESKTOP LAYOUT (三欄) ── */
+.desktop-layout {
   display: grid;
   grid-template-columns: 1fr 260px 1fr;
   gap: 1.2rem;
@@ -131,22 +166,51 @@ body::before {
 }
 
 @media(max-width: 1024px) {
-  .spinner-layout {
+  .desktop-layout {
     grid-template-columns: 1fr 240px 1fr;
     gap: 1rem;
   }
 }
 
 @media(max-width: 768px) {
-  .spinner-layout { 
-    grid-template-columns: 1fr;
-    gap: 0.8rem;
-    max-width: 380px;
-    margin: 0 auto;
+  .desktop-layout {
+    display: none;
   }
-  .panel-left { order: 2; }
-  .panel-center { order: 1; }
-  .panel-right { order: 3; }
+}
+
+/* ── MOBILE LAYOUT (分頁) ── */
+.mobile-layout {
+  display: none;
+}
+
+@media(max-width: 768px) {
+  .mobile-layout {
+    display: block;
+  }
+}
+
+/* 手機版：轉盤頁 */
+.mobile-wheel-page {
+  min-height: calc(100vh - 60px); /* 減去底部社交欄位高度 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between; /* 改這裡 */
+  padding: 1rem 1rem 1rem; /* 改這裡：底部改回 1rem */
+}
+
+/* 手機版：設定頁 */
+.mobile-settings-page {
+  min-height: auto; /* 改這裡：從 100vh 改成 auto */
+  padding: 2rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobile-settings-container {
+  width: 100%;
+  max-width: 500px;
 }
 
 /* ── WHEEL ── */
@@ -157,6 +221,12 @@ body::before {
   gap: 0.8rem;
 }
 
+@media(max-width: 768px) {
+  .panel-center {
+    gap: 1.2rem;
+  }
+}
+
 .wheel-frame {
   position: relative; 
   width: 240px; 
@@ -165,8 +235,8 @@ body::before {
 
 @media(max-width: 768px) {
   .wheel-frame {
-    width: 220px;
-    height: 220px;
+    width: 280px;
+    height: 280px;
   }
 }
 
@@ -188,92 +258,13 @@ body::before {
   z-index: 10;
   filter: drop-shadow(0 0 6px var(--gold));
 }
+
 .wheel-pointer svg { display: block; }
 #wheel-canvas {
   border-radius: 50%;
   display: block;
   box-shadow: 0 0 60px rgba(0,0,0,0.8);
 }
-
-/* ── FOOD INPUT PANEL ── */
-.glass-panel {
-  background: rgba(28,24,16,0.7);
-  border: 0.5px solid rgba(201,168,76,0.2);
-  border-radius: 12px;
-  padding: 0.9rem;
-  backdrop-filter: blur(12px);
-}
-
-.panel-label {
-  font-size: 9px; 
-  letter-spacing: 0.25em; 
-  text-transform: uppercase;
-  color: var(--gold); 
-  display: block; 
-  margin-bottom: 0.7rem;
-}
-
-.food-input-row {
-  display: flex; gap: 6px; margin-bottom: 0.7rem;
-}
-.food-input-row input {
-  flex: 1; padding: 6px 10px;
-  background: rgba(255,255,255,0.04);
-  border: 0.5px solid rgba(201,168,76,0.25);
-  border-radius: 6px;
-  color: var(--cream); font-size: 12px;
-  font-family: 'Noto Serif TC', serif;
-  outline: none; transition: border-color 0.2s;
-}
-.food-input-row input:focus { border-color: var(--gold); }
-.food-input-row input::placeholder { color: rgba(240,230,204,0.25); }
-
-.btn-add {
-  padding: 6px 11px;
-  background: rgba(201,168,76,0.1);
-  border: 0.5px solid rgba(201,168,76,0.4);
-  border-radius: 6px;
-  color: var(--gold); font-size: 15px; line-height: 1;
-  cursor: pointer; transition: all 0.2s;
-  font-family: sans-serif;
-}
-.btn-add:hover { background: rgba(201,168,76,0.2); box-shadow: 0 0 12px var(--gold-glow); }
-
-.food-tags {
-  display: flex; flex-wrap: wrap; gap: 4px;
-  max-height: 100px; overflow-y: auto;
-}
-
-@media(max-width: 768px) {
-  .food-tags {
-    max-height: 85px;
-  }
-}
-
-.food-tag {
-  display: inline-flex; align-items: center; gap: 4px;
-  padding: 3px 8px; border-radius: 99px;
-  font-size: 10px; font-weight: 300;
-  border: 0.5px solid rgba(201,168,76,0.3);
-  background: rgba(201,168,76,0.07);
-  color: var(--cream-dim);
-  transition: all 0.2s;
-}
-.food-tag:hover { border-color: rgba(201,168,76,0.6); color: var(--cream); }
-.tag-del { cursor: pointer; color: rgba(201,168,76,0.4); font-size: 9px; transition: color 0.15s; }
-.tag-del:hover { color: var(--gold); }
-
-.btn-reset {
-  margin-top: 0.5rem;
-  width: 100%; padding: 5px;
-  background: transparent;
-  border: 0.5px solid rgba(201,168,76,0.15);
-  border-radius: 6px;
-  color: rgba(201,168,76,0.4); font-size: 9px; letter-spacing: 0.1em;
-  cursor: pointer; font-family: 'Noto Serif TC', serif;
-  transition: all 0.2s;
-}
-.btn-reset:hover { border-color: rgba(201,168,76,0.3); color: var(--gold); }
 
 /* ── MESSAGE BOX ── */
 .msg-panel {
@@ -290,7 +281,8 @@ body::before {
 
 @media(max-width: 768px) {
   .msg-panel {
-    min-height: 130px;
+    min-height: 160px;
+    padding: 1.2rem;
   }
 }
 
@@ -299,12 +291,35 @@ body::before {
   width: 65px; height: 65px;
   display: flex; align-items: center; justify-content: center;
 }
+
+@media(max-width: 768px) {
+  .sticker-area {
+    width: 80px;
+    height: 80px;
+  }
+}
+
 .sticker-img {
   width: 65px; height: 65px;
   object-fit: contain;
   display: none;
 }
+
+@media(max-width: 768px) {
+  .sticker-img {
+    width: 80px;
+    height: 80px;
+  }
+}
+
 .sticker-emoji { font-size: 44px; line-height: 1; }
+
+@media(max-width: 768px) {
+  .sticker-emoji {
+    font-size: 56px;
+  }
+}
+
 .sticker-area.animate .sticker-emoji,
 .sticker-area.animate .sticker-img {
   animation: stickerBounce 0.5s ease infinite alternate;
@@ -319,6 +334,14 @@ body::before {
   color: var(--cream-dim); font-weight: 300;
   white-space: pre-line;
 }
+
+@media(max-width: 768px) {
+  .msg-text {
+    font-size: 13px;
+    line-height: 1.6;
+  }
+}
+
 .msg-result {
   font-family: 'Playfair Display', serif;
   font-size: 18px; font-style: italic;
@@ -326,8 +349,21 @@ body::before {
   text-shadow: 0 0 20px var(--gold-glow-strong);
 }
 
+@media(max-width: 768px) {
+  .msg-result {
+    font-size: 24px;
+  }
+}
+
 /* ── SPIN & EAT BUTTONS ── */
 .btn-row { display: flex; gap: 7px; justify-content: center; flex-wrap: wrap; }
+
+@media(max-width: 768px) {
+  .btn-row {
+    gap: 10px;
+    margin-bottom: 80px; /* 加這行：讓按鈕與底部保持距離 */
+  }
+}
 
 .btn-spin {
   position: relative; overflow: hidden;
@@ -344,8 +380,8 @@ body::before {
 
 @media(max-width: 768px) {
   .btn-spin {
-    padding: 9px 24px;
-    font-size: 13px;
+    padding: 12px 32px;
+    font-size: 15px;
   }
 }
 
@@ -377,8 +413,8 @@ body::before {
 
 @media(max-width: 768px) {
   .btn-eat {
-    padding: 9px 20px;
-    font-size: 11px;
+    padding: 12px 28px;
+    font-size: 14px;
   }
 }
 
@@ -388,8 +424,151 @@ body::before {
   box-shadow: 0 0 20px var(--gold-glow);
 }
 
+/* ── FOOD INPUT PANEL ── */
+.glass-panel {
+  background: rgba(28,24,16,0.7);
+  border: 0.5px solid rgba(201,168,76,0.2);
+  border-radius: 12px;
+  padding: 0.9rem;
+  backdrop-filter: blur(12px);
+}
+
+@media(max-width: 768px) {
+  .glass-panel {
+    padding: 1.2rem;
+  }
+}
+
+.panel-label {
+  font-size: 9px; 
+  letter-spacing: 0.25em; 
+  text-transform: uppercase;
+  color: var(--gold); 
+  display: block; 
+  margin-bottom: 0.7rem;
+}
+
+@media(max-width: 768px) {
+  .panel-label {
+    font-size: 10px;
+    margin-bottom: 1rem;
+  }
+}
+
+.food-input-row {
+  display: flex; gap: 6px; margin-bottom: 0.7rem;
+}
+
+@media(max-width: 768px) {
+  .food-input-row {
+    gap: 8px;
+    margin-bottom: 1rem;
+  }
+}
+
+.food-input-row input {
+  flex: 1; padding: 6px 10px;
+  background: rgba(255,255,255,0.04);
+  border: 0.5px solid rgba(201,168,76,0.25);
+  border-radius: 6px;
+  color: var(--cream); font-size: 12px;
+  font-family: 'Noto Serif TC', serif;
+  outline: none; transition: border-color 0.2s;
+}
+
+@media(max-width: 768px) {
+  .food-input-row input {
+    padding: 10px 14px;
+    font-size: 14px;
+  }
+}
+
+.food-input-row input:focus { border-color: var(--gold); }
+.food-input-row input::placeholder { color: rgba(240,230,204,0.25); }
+
+.btn-add {
+  padding: 6px 11px;
+  background: rgba(201,168,76,0.1);
+  border: 0.5px solid rgba(201,168,76,0.4);
+  border-radius: 6px;
+  color: var(--gold); font-size: 15px; line-height: 1;
+  cursor: pointer; transition: all 0.2s;
+  font-family: sans-serif;
+}
+
+@media(max-width: 768px) {
+  .btn-add {
+    padding: 10px 14px;
+    font-size: 18px;
+  }
+}
+
+.btn-add:hover { background: rgba(201,168,76,0.2); box-shadow: 0 0 12px var(--gold-glow); }
+
+.food-tags {
+  display: flex; flex-wrap: wrap; gap: 4px;
+  max-height: 100px; overflow-y: auto;
+}
+
+@media(max-width: 768px) {
+  .food-tags {
+    max-height: none;
+    gap: 6px;
+  }
+}
+
+.food-tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 8px; border-radius: 99px;
+  font-size: 10px; font-weight: 300;
+  border: 0.5px solid rgba(201,168,76,0.3);
+  background: rgba(201,168,76,0.07);
+  color: var(--cream-dim);
+  transition: all 0.2s;
+}
+
+@media(max-width: 768px) {
+  .food-tag {
+    padding: 6px 12px;
+    font-size: 13px;
+    gap: 6px;
+  }
+}
+
+.food-tag:hover { border-color: rgba(201,168,76,0.6); color: var(--cream); }
+.tag-del { cursor: pointer; color: rgba(201,168,76,0.4); font-size: 9px; transition: color 0.15s; }
+
+@media(max-width: 768px) {
+  .tag-del {
+    font-size: 12px;
+  }
+}
+
+.tag-del:hover { color: var(--gold); }
+
+.btn-reset {
+  margin-top: 0.5rem;
+  width: 100%; padding: 5px;
+  background: transparent;
+  border: 0.5px solid rgba(201,168,76,0.15);
+  border-radius: 6px;
+  color: rgba(201,168,76,0.4); font-size: 9px; letter-spacing: 0.1em;
+  cursor: pointer; font-family: 'Noto Serif TC', serif;
+  transition: all 0.2s;
+}
+
+@media(max-width: 768px) {
+  .btn-reset {
+    margin-top: 1rem;
+    padding: 8px;
+    font-size: 11px;
+  }
+}
+
+.btn-reset:hover { border-color: rgba(201,168,76,0.3); color: var(--gold); }
+
 /* ══════════════════════════════
-   SOCIAL SECTION (精簡版)
+   SOCIAL SECTION
 ══════════════════════════════ */
 .social-section {
   padding: 0.8rem 1rem;
@@ -397,11 +576,26 @@ body::before {
   flex-shrink: 0;
 }
 
+/* 手機版：在最下方但不固定 */
+@media(max-width: 768px) {
+  .social-section {
+    padding: 1rem 0.8rem;
+    border-top: 0.5px solid rgba(201,168,76,0.2);
+    background: rgba(13, 11, 8, 0.5);
+  }
+}
+
 .social-links {
   display: flex; 
   flex-wrap: wrap;
   justify-content: center; 
   gap: 6px;
+}
+
+@media(max-width: 768px) {
+  .social-links {
+    gap: 5px;
+  }
 }
 
 .social-link {
@@ -419,6 +613,15 @@ body::before {
   transition: all 0.3s;
   background: rgba(201,168,76,0.04);
 }
+
+@media(max-width: 768px) {
+  .social-link {
+    padding: 6px 10px;
+    font-size: 9px;
+    gap: 4px;
+  }
+}
+
 .social-link:hover {
   border-color: var(--gold);
   color: var(--gold-light);
@@ -431,6 +634,13 @@ body::before {
   height: 12px; 
   fill: currentColor; 
   flex-shrink: 0; 
+}
+
+@media(max-width: 768px) {
+  .social-icon {
+    width: 11px;
+    height: 11px;
+  }
 }
 
 /* ══════════════════════════════
@@ -622,17 +832,18 @@ body::before {
 <div class="bg-image"></div>
 <div class="page">
 
-<!-- ══ HEADER (精簡版) ══ -->
+<!-- ══ HEADER ══ -->
 <header class="header">
   <h1 class="header-title">今天,<em>吃什麼?</em></h1>
   <p class="header-subtitle">讓命運替你決定 · 感謝世界 · 感謝自己</p>
 </header>
 
-<!-- ══ SPINNER ══ -->
-<section class="spinner-section">
-  <div class="spinner-container">
-    <div class="spinner-layout">
-
+<!-- ══ MAIN CONTENT ══ -->
+<section class="main-content">
+  <div class="content-container">
+    
+    <!-- ──────── 桌面版佈局 (三欄) ──────── -->
+    <div class="desktop-layout">
       <!-- 左側:食物輸入 -->
       <div class="panel-left">
         <div class="glass-panel">
@@ -677,12 +888,61 @@ body::before {
           <div class="msg-result" id="msg-result" style="display:none"></div>
         </div>
       </div>
-
     </div>
+
+    <!-- ──────── 手機版佈局 (分頁) ──────── -->
+    <div class="mobile-layout">
+      <!-- 第一頁：轉盤 -->
+      <div class="mobile-wheel-page">
+        <div class="panel-center">
+          <div class="wheel-frame" id="wheel-frame-mobile">
+            <div class="wheel-ring"></div>
+            <div class="wheel-pointer">
+              <svg width="24" height="28" viewBox="0 0 24 28">
+                <polygon points="12,2 22,22 12,18 2,22" fill="#c9a84c" stroke="none"/>
+                <polygon points="12,2 22,22 12,18 2,22" fill="none" stroke="rgba(255,220,100,0.4)" stroke-width="1"/>
+              </svg>
+            </div>
+            <canvas id="wheel-canvas-mobile" width="280" height="280"></canvas>
+          </div>
+
+          <div class="btn-row">
+            <button class="btn-spin" onclick="spin()">✦ 旋轉命運 ✦</button>
+            <button class="btn-eat" id="eat-btn-mobile" onclick="eat()">🍽 開動!</button>
+          </div>
+
+          <div class="msg-panel">
+            <div class="sticker-area" id="sticker-area-mobile">
+              <img class="sticker-img" id="sticker-img-mobile" src="" alt="" />
+              <span class="sticker-emoji" id="sticker-emoji-mobile">✨</span>
+            </div>
+            <p class="msg-text" id="msg-text-mobile">按下旋轉<br>讓命運替你決定今天的餐點</p>
+            <div class="msg-result" id="msg-result-mobile" style="display:none"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第二頁：設定 -->
+      <div class="mobile-settings-page">
+        <div class="mobile-settings-container">
+          <div class="glass-panel">
+            <span class="panel-label">✦ 我想吃的</span>
+            <div class="food-input-row">
+              <input id="food-input-mobile" type="text" placeholder="輸入食物名稱…" maxlength="12"
+                onkeydown="if(event.key==='Enter') addFood()" />
+              <button class="btn-add" onclick="addFood()" title="新增">＋</button>
+            </div>
+            <div class="food-tags" id="food-tags-mobile"></div>
+            <button class="btn-reset" onclick="resetDefault()">↺ 還原預設清單</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </section>
 
-<!-- ══ SOCIAL LINKS (精簡版) ══ -->
+<!-- ══ SOCIAL LINKS (底部固定) ══ -->
 <section class="social-section">
   <div class="social-links">
     <a class="social-link" href="#" target="_blank" rel="noopener">
@@ -771,6 +1031,9 @@ let spinning = false;
 let currentAngle = 0;
 let result = null;
 
+// 判斷是否為手機
+const isMobile = window.innerWidth <= 768;
+
 /* ── 音訊 ── */
 const audioCache = {};
 function playAudio(key) {
@@ -795,41 +1058,74 @@ function useTTS(key) {
 /* ── 貼圖切換 ── */
 function setSticker(key) {
   const cfg = STICKERS[key] || STICKERS.idle;
+  
+  // 桌面版
   const area = document.getElementById('sticker-area');
   const img  = document.getElementById('sticker-img');
   const emoji= document.getElementById('sticker-emoji');
-  area.classList.remove('animate');
-  void area.offsetWidth;
-  area.classList.add('animate');
-  if (cfg.img) {
-    img.src = cfg.img + '?t=' + Date.now();
-    img.style.display = 'block';
-    emoji.style.display = 'none';
-  } else {
-    emoji.textContent = cfg.emoji;
-    emoji.style.display = 'block';
-    img.style.display = 'none';
+  
+  // 手機版
+  const areaMobile = document.getElementById('sticker-area-mobile');
+  const imgMobile  = document.getElementById('sticker-img-mobile');
+  const emojiMobile= document.getElementById('sticker-emoji-mobile');
+  
+  function updateSticker(areaEl, imgEl, emojiEl) {
+    if (!areaEl) return;
+    areaEl.classList.remove('animate');
+    void areaEl.offsetWidth;
+    areaEl.classList.add('animate');
+    if (cfg.img) {
+      imgEl.src = cfg.img + '?t=' + Date.now();
+      imgEl.style.display = 'block';
+      emojiEl.style.display = 'none';
+    } else {
+      emojiEl.textContent = cfg.emoji;
+      emojiEl.style.display = 'block';
+      imgEl.style.display = 'none';
+    }
   }
+  
+  updateSticker(area, img, emoji);
+  updateSticker(areaMobile, imgMobile, emojiMobile);
 }
 
 /* ── 訊息 ── */
 function setMsg(text, resultName) {
-  document.getElementById('msg-text').innerHTML = text;
-  const r = document.getElementById('msg-result');
-  if (resultName) { r.textContent = resultName; r.style.display = 'block'; }
-  else r.style.display = 'none';
+  // 桌面版
+  const msgText = document.getElementById('msg-text');
+  const msgResult = document.getElementById('msg-result');
+  if (msgText) msgText.innerHTML = text;
+  if (msgResult) {
+    if (resultName) { msgResult.textContent = resultName; msgResult.style.display = 'block'; }
+    else msgResult.style.display = 'none';
+  }
+  
+  // 手機版
+  const msgTextMobile = document.getElementById('msg-text-mobile');
+  const msgResultMobile = document.getElementById('msg-result-mobile');
+  if (msgTextMobile) msgTextMobile.innerHTML = text;
+  if (msgResultMobile) {
+    if (resultName) { msgResultMobile.textContent = resultName; msgResultMobile.style.display = 'block'; }
+    else msgResultMobile.style.display = 'none';
+  }
 }
 
 /* ── 轉盤繪製 ── */
 const canvas = document.getElementById('wheel-canvas');
-const ctx = canvas.getContext('2d');
-let CX = 120, CY = 120, R = 110;
+const canvasMobile = document.getElementById('wheel-canvas-mobile');
 
 function drawWheel() {
-  const size = canvas.width;
-  CX = size / 2;
-  CY = size / 2;
-  R = size / 2 - 10;
+  // 桌面版
+  if (canvas) drawOnCanvas(canvas, 240);
+  // 手機版
+  if (canvasMobile) drawOnCanvas(canvasMobile, 280);
+}
+
+function drawOnCanvas(cvs, size) {
+  const ctx = cvs.getContext('2d');
+  const CX = size / 2;
+  const CY = size / 2;
+  const R = size / 2 - 10;
   
   ctx.clearRect(0, 0, size, size);
   const n = foods.length;
@@ -852,48 +1148,44 @@ function drawWheel() {
     ctx.translate(CX, CY); ctx.rotate(start + arc/2);
     ctx.fillStyle = fg;
     const label = foods[i];
-    const fs = label.length > 6 ? 9 : label.length > 4 ? 11 : 13;
+    const fs = label.length > 6 ? 10 : label.length > 4 ? 12 : 14;
     ctx.font = `400 ${fs}px "Noto Serif TC", serif`;
     ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
     ctx.fillText(label, R - 10, 0);
     ctx.restore();
   }
-  ctx.beginPath(); ctx.arc(CX,CY,16,0,Math.PI*2);
+  ctx.beginPath(); ctx.arc(CX,CY,18,0,Math.PI*2);
   ctx.fillStyle = '#0d0b08'; ctx.fill();
   ctx.strokeStyle = 'rgba(201,168,76,0.5)'; ctx.lineWidth = 1; ctx.stroke();
   ctx.fillStyle = '#c9a84c'; ctx.font = '9px serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   ctx.fillText('✦', CX, CY);
 }
 
-// 響應式 canvas 尺寸
-function updateCanvasSize() {
-  if (window.innerWidth <= 768) {
-    canvas.width = 220;
-    canvas.height = 220;
-  } else {
-    canvas.width = 240;
-    canvas.height = 240;
-  }
-  drawWheel();
-}
-
-window.addEventListener('resize', updateCanvasSize);
-
 /* ── 食物管理 ── */
 function renderTags() {
+  // 桌面版
   const c = document.getElementById('food-tags');
-  c.innerHTML = '';
+  if (c) renderTagsOnElement(c);
+  
+  // 手機版
+  const cMobile = document.getElementById('food-tags-mobile');
+  if (cMobile) renderTagsOnElement(cMobile);
+}
+
+function renderTagsOnElement(container) {
+  container.innerHTML = '';
   foods.forEach((f, i) => {
     const [bg, fg] = WHEEL_COLORS[i % WHEEL_COLORS.length];
     const tag = document.createElement('div');
     tag.className = 'food-tag';
     tag.style.cssText = `background:${bg}; color:${fg}; border-color:rgba(201,168,76,0.2)`;
     tag.innerHTML = `${f}&thinsp;<span class="tag-del" onclick="removeFood(${i})">✕</span>`;
-    c.appendChild(tag);
+    container.appendChild(tag);
   });
 }
+
 function addFood() {
-  const inp = document.getElementById('food-input');
+  const inp = document.getElementById('food-input') || document.getElementById('food-input-mobile');
   const v = inp.value.trim();
   if (!v) return;
   if (foods.length >= 12) { setMsg('最多 12 個選項喔!'); return; }
@@ -908,9 +1200,19 @@ function resetDefault() { foods = [...DEFAULT_FOODS]; renderTags(); drawWheel();
 function spin() {
   if (spinning || foods.length < 2) return;
   spinning = true;
-  document.getElementById('spin-btn').disabled = true;
-  document.getElementById('eat-btn').style.display = 'none';
-  document.getElementById('wheel-frame').classList.add('spinning');
+  
+  const spinBtn = document.getElementById('spin-btn');
+  const eatBtn = document.getElementById('eat-btn');
+  const eatBtnMobile = document.getElementById('eat-btn-mobile');
+  const wheelFrame = document.getElementById('wheel-frame');
+  const wheelFrameMobile = document.getElementById('wheel-frame-mobile');
+  
+  if (spinBtn) spinBtn.disabled = true;
+  if (eatBtn) eatBtn.style.display = 'none';
+  if (eatBtnMobile) eatBtnMobile.style.display = 'none';
+  if (wheelFrame) wheelFrame.classList.add('spinning');
+  if (wheelFrameMobile) wheelFrameMobile.classList.add('spinning');
+  
   result = null;
 
   setSticker('spin');
@@ -931,8 +1233,10 @@ function spin() {
     if (p < 1) { requestAnimationFrame(frame); return; }
     currentAngle = target;
     spinning = false;
-    document.getElementById('spin-btn').disabled = false;
-    document.getElementById('wheel-frame').classList.remove('spinning');
+    
+    if (spinBtn) spinBtn.disabled = false;
+    if (wheelFrame) wheelFrame.classList.remove('spinning');
+    if (wheelFrameMobile) wheelFrameMobile.classList.remove('spinning');
 
     const n = foods.length;
     const arc = (Math.PI*2) / n;
@@ -942,7 +1246,9 @@ function spin() {
     setSticker('result');
     setMsg('決定今天吃這個!', result);
     playAudio('result');
-    document.getElementById('eat-btn').style.display = 'inline-block';
+    
+    if (eatBtn) eatBtn.style.display = 'inline-block';
+    if (eatBtnMobile) eatBtnMobile.style.display = 'inline-block';
   })(performance.now());
 }
 
@@ -982,8 +1288,8 @@ document.addEventListener('keydown', function(e) {
 
 /* 初始化 */
 window.speechSynthesis && window.speechSynthesis.getVoices();
-updateCanvasSize();
 renderTags();
+drawWheel();
 </script>
 </body>
 </html>
