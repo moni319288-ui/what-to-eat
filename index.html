@@ -924,8 +924,8 @@ body::before {
           <div class="wheel-ring"></div>
           <div class="wheel-pointer">
             <svg width="24" height="28" viewBox="0 0 24 28">
-              <polygon points="12,2 22,22 12,18 2,22" fill="#c9a84c" stroke="none"/>
-              <polygon points="12,2 22,22 12,18 2,22" fill="none" stroke="rgba(255,220,100,0.4)" stroke-width="1"/>
+              <polygon points="12,26 2,6 12,10 22,6" fill="#c9a84c" stroke="none"/>
+              <polygon points="12,26 2,6 12,10 22,6" fill="none" stroke="rgba(255,220,100,0.4)" stroke-width="1"/>
             </svg>
           </div>
           <canvas id="wheel-canvas" width="240" height="240"></canvas>
@@ -959,8 +959,8 @@ body::before {
             <div class="wheel-ring"></div>
             <div class="wheel-pointer">
               <svg width="24" height="28" viewBox="0 0 24 28">
-                <polygon points="12,2 22,22 12,18 2,22" fill="#c9a84c" stroke="none"/>
-                <polygon points="12,2 22,22 12,18 2,22" fill="none" stroke="rgba(255,220,100,0.4)" stroke-width="1"/>
+                <polygon points="12,26 2,6 12,10 22,6" fill="#c9a84c" stroke="none"/>
+                <polygon points="12,26 2,6 12,10 22,6" fill="none" stroke="rgba(255,220,100,0.4)" stroke-width="1"/>
               </svg>
             </div>
             <canvas id="wheel-canvas-mobile" width="280" height="280"></canvas>
@@ -1322,8 +1322,14 @@ function spin() {
 
     const n = foods.length;
     const arc = (Math.PI*2) / n;
-    const norm = (((-currentAngle % (Math.PI*2)) + Math.PI*2 + Math.PI/2) % (Math.PI*2));
-    result = foods[Math.floor(norm / arc) % n];
+    // 指針固定在頂部(-Math.PI/2)，計算哪個扇形在這個位置
+    // 扇形 i 的起始角度是 currentAngle + arc*i - Math.PI/2
+    // 我們要找到 -Math.PI/2 落在哪個扇形中
+    const adjustedAngle = (-currentAngle) % (Math.PI * 2);
+    const positiveAngle = ((adjustedAngle % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
+    const index = Math.floor(positiveAngle / arc) % n;
+    result = foods[index];
+
 
     setSticker('result');
     setMsg('決定今天吃這個!', result);
