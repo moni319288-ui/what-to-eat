@@ -48,7 +48,7 @@ body {
 /* 手機版：可以滾動 */
 @media(max-width: 768px) {
   body {
-    padding-bottom: 0; /* 不需要預留空間 */
+    padding-bottom: 0;
   }
 }
 
@@ -191,17 +191,17 @@ body::before {
 
 /* 手機版：轉盤頁 */
 .mobile-wheel-page {
-  min-height: calc(100vh - 60px); /* 減去底部社交欄位高度 */
+  min-height: calc(100vh - 60px);
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between; /* 改這裡 */
-  padding: 1rem 1rem 1rem; /* 改這裡：底部改回 1rem */
+  justify-content: space-between;
+  padding: 1rem 1rem 1rem;
 }
 
 /* 手機版：設定頁 */
 .mobile-settings-page {
-  min-height: auto; /* 改這裡：從 100vh 改成 auto */
+  min-height: auto;
   padding: 2rem 1rem;
   display: flex;
   align-items: center;
@@ -361,7 +361,7 @@ body::before {
 @media(max-width: 768px) {
   .btn-row {
     gap: 10px;
-    margin-bottom: 80px; /* 加這行：讓按鈕與底部保持距離 */
+    margin-bottom: 80px;
   }
 }
 
@@ -568,6 +568,66 @@ body::before {
 .btn-reset:hover { border-color: rgba(201,168,76,0.3); color: var(--gold); }
 
 /* ══════════════════════════════
+   MESSAGE MODAL (手機版)
+══════════════════════════════ */
+@media(max-width: 768px) {
+  .msg-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 9998;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    backdrop-filter: blur(8px);
+    animation: modalFadeIn 0.3s ease;
+  }
+  
+  .msg-modal.show {
+    display: flex;
+  }
+  
+  .msg-modal-content {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    animation: modalSlideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  
+  .msg-modal-close {
+    position: absolute;
+    top: -50px;
+    right: 50%;
+    transform: translateX(50%);
+    width: 40px;
+    height: 40px;
+    background: rgba(28, 24, 16, 0.8);
+    border: 0.5px solid rgba(201,168,76,0.3);
+    border-radius: 50%;
+    color: var(--gold);
+    font-size: 22px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+    backdrop-filter: blur(12px);
+  }
+  
+  .msg-modal-close:hover {
+    background: rgba(201,168,76,0.15);
+    border-color: var(--gold);
+    transform: translateX(50%) rotate(90deg);
+    box-shadow: 0 0 20px rgba(201,168,76,0.3);
+  }
+  
+  .msg-modal .msg-panel {
+    min-height: 200px;
+  }
+}
+
+/* ══════════════════════════════
    SOCIAL SECTION
 ══════════════════════════════ */
 .social-section {
@@ -576,7 +636,6 @@ body::before {
   flex-shrink: 0;
 }
 
-/* 手機版：在最下方但不固定 */
 @media(max-width: 768px) {
   .social-section {
     padding: 1rem 0.8rem;
@@ -910,15 +969,6 @@ body::before {
             <button class="btn-spin" onclick="spin()">✦ 旋轉命運 ✦</button>
             <button class="btn-eat" id="eat-btn-mobile" onclick="eat()">🍽 開動!</button>
           </div>
-
-          <div class="msg-panel">
-            <div class="sticker-area" id="sticker-area-mobile">
-              <img class="sticker-img" id="sticker-img-mobile" src="" alt="" />
-              <span class="sticker-emoji" id="sticker-emoji-mobile">✨</span>
-            </div>
-            <p class="msg-text" id="msg-text-mobile">按下旋轉<br>讓命運替你決定今天的餐點</p>
-            <div class="msg-result" id="msg-result-mobile" style="display:none"></div>
-          </div>
         </div>
       </div>
 
@@ -942,7 +992,7 @@ body::before {
   </div>
 </section>
 
-<!-- ══ SOCIAL LINKS (底部固定) ══ -->
+<!-- ══ SOCIAL LINKS ══ -->
 <section class="social-section">
   <div class="social-links">
     <a class="social-link" href="#" target="_blank" rel="noopener">
@@ -971,6 +1021,21 @@ body::before {
     </a>
   </div>
 </section>
+
+<!-- ══ 手機版訊息 MODAL ══ -->
+<div class="msg-modal" id="msg-modal-mobile">
+  <div class="msg-modal-content">
+    <button class="msg-modal-close" onclick="closeMsgModal()">✕</button>
+    <div class="msg-panel">
+      <div class="sticker-area" id="sticker-area-mobile">
+        <img class="sticker-img" id="sticker-img-mobile" src="" alt="" />
+        <span class="sticker-emoji" id="sticker-emoji-mobile">✨</span>
+      </div>
+      <p class="msg-text" id="msg-text-mobile">按下旋轉<br>讓命運替你決定今天的餐點</p>
+      <div class="msg-result" id="msg-result-mobile" style="display:none"></div>
+    </div>
+  </div>
+</div>
 
 <!-- ══ VIDEO MODAL ══ -->
 <div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
@@ -1030,9 +1095,6 @@ let foods = [...DEFAULT_FOODS];
 let spinning = false;
 let currentAngle = 0;
 let result = null;
-
-// 判斷是否為手機
-const isMobile = window.innerWidth <= 768;
 
 /* ── 音訊 ── */
 const audioCache = {};
@@ -1107,6 +1169,25 @@ function setMsg(text, resultName) {
   if (msgResultMobile) {
     if (resultName) { msgResultMobile.textContent = resultName; msgResultMobile.style.display = 'block'; }
     else msgResultMobile.style.display = 'none';
+  }
+}
+
+/* ── 訊息 Modal (手機版) ── */
+function showMsgModal() {
+  if (window.innerWidth <= 768) {
+    const modal = document.getElementById('msg-modal-mobile');
+    if (modal) {
+      modal.classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+  }
+}
+
+function closeMsgModal() {
+  const modal = document.getElementById('msg-modal-mobile');
+  if (modal) {
+    modal.classList.remove('show');
+    document.body.style.overflow = '';
   }
 }
 
@@ -1249,6 +1330,9 @@ function spin() {
     
     if (eatBtn) eatBtn.style.display = 'inline-block';
     if (eatBtnMobile) eatBtnMobile.style.display = 'inline-block';
+    
+    // 手機版顯示訊息 modal
+    showMsgModal();
   })(performance.now());
 }
 
@@ -1283,6 +1367,7 @@ function closeModal(event) {
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') {
     closeModal();
+    closeMsgModal();
   }
 });
 
