@@ -99,7 +99,7 @@ body::before {
 ══════════════════════════════ */
 .header {
   text-align: center;
-  padding: 1rem 1rem 0.8rem;
+  padding: 1rem 1rem 0.5rem;
   flex-shrink: 0;
 }
 
@@ -139,7 +139,7 @@ body::before {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0.5rem 1rem;
+  padding: 1rem 2rem;
   overflow: hidden;
   min-height: 0;
 }
@@ -154,21 +154,22 @@ body::before {
 
 .content-container {
   width: 100%;
-  max-width: 1200px;
+  max-width: 900px;
 }
 
-/* ── DESKTOP LAYOUT (三欄) ── */
+/* ── DESKTOP LAYOUT (兩欄) ── */
 .desktop-layout {
   display: grid;
-  grid-template-columns: 1fr 260px 1fr;
-  gap: 1.2rem;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
   align-items: center;
+  max-height: 100%;
+  overflow: hidden;
 }
 
 @media(max-width: 1024px) {
   .desktop-layout {
-    grid-template-columns: 1fr 240px 1fr;
-    gap: 1rem;
+    gap: 1.5rem;
   }
 }
 
@@ -219,7 +220,7 @@ body::before {
   display: flex; 
   flex-direction: column; 
   align-items: center; 
-  gap: 0.8rem;
+  gap: 1rem;
 }
 
 @media(max-width: 768px) {
@@ -230,8 +231,8 @@ body::before {
 
 .wheel-frame {
   position: relative; 
-  width: 240px; 
-  height: 240px;
+  width: 280px; 
+  height: 280px;
 }
 
 @media(max-width: 768px) {
@@ -267,7 +268,52 @@ body::before {
   box-shadow: 0 0 60px rgba(0,0,0,0.8);
 }
 
-/* ── MESSAGE BOX ── */
+/* ── RESULT DISPLAY (桌面版 - 轉盤下方) ── */
+.result-display {
+  text-align: center;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.result-sticker {
+  font-size: 50px;
+  line-height: 1;
+}
+
+.result-sticker.animate {
+  animation: stickerBounce 0.5s ease infinite alternate;
+}
+
+@keyframes stickerBounce {
+  from { transform: scale(1) rotate(-4deg); }
+  to   { transform: scale(1.12) rotate(4deg); }
+}
+
+.result-message {
+  font-size: 12px;
+  color: var(--cream-dim);
+  font-weight: 300;
+  line-height: 1.5;
+}
+
+.result-food {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px;
+  font-style: italic;
+  color: var(--gold-light);
+  text-shadow: 0 0 20px var(--gold-glow-strong);
+  display: none;
+}
+
+.result-food.show {
+  display: block;
+}
+
+/* ── MESSAGE BOX (手機版) ── */
 .msg-panel {
   background: rgba(28,24,16,0.7);
   border: 0.5px solid rgba(201,168,76,0.2);
@@ -325,10 +371,6 @@ body::before {
 .sticker-area.animate .sticker-img {
   animation: stickerBounce 0.5s ease infinite alternate;
 }
-@keyframes stickerBounce {
-  from { transform: scale(1) rotate(-4deg); }
-  to   { transform: scale(1.12) rotate(4deg); }
-}
 
 .msg-text {
   font-size: 11px; line-height: 1.5;
@@ -368,7 +410,7 @@ body::before {
 
 .btn-spin {
   position: relative; overflow: hidden;
-  padding: 10px 28px;
+  padding: 12px 32px;
   background: linear-gradient(135deg, rgba(201,168,76,0.15), rgba(201,168,76,0.08));
   border: 1px solid var(--gold);
   border-radius: 8px;
@@ -402,11 +444,11 @@ body::before {
 .btn-spin:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
 
 .btn-eat {
-  padding: 10px 22px;
+  padding: 12px 28px;
   background: transparent;
   border: 0.5px solid rgba(201,168,76,0.35);
   border-radius: 8px;
-  color: var(--cream-dim); font-size: 12px; letter-spacing: 0.06em;
+  color: var(--cream-dim); font-size: 13px; letter-spacing: 0.06em;
   font-family: 'Noto Serif TC', serif;
   cursor: pointer; transition: all 0.3s;
   display: none;
@@ -430,7 +472,7 @@ body::before {
   background: rgba(28,24,16,0.7);
   border: 0.5px solid rgba(201,168,76,0.2);
   border-radius: 12px;
-  padding: 0.9rem;
+  padding: 1.2rem;
   backdrop-filter: blur(12px);
 }
 
@@ -446,7 +488,7 @@ body::before {
   text-transform: uppercase;
   color: var(--gold); 
   display: block; 
-  margin-bottom: 0.7rem;
+  margin-bottom: 0.8rem;
 }
 
 @media(max-width: 768px) {
@@ -457,7 +499,7 @@ body::before {
 }
 
 .food-input-row {
-  display: flex; gap: 6px; margin-bottom: 0.7rem;
+  display: flex; gap: 6px; margin-bottom: 0.8rem;
 }
 
 @media(max-width: 768px) {
@@ -468,11 +510,11 @@ body::before {
 }
 
 .food-input-row input {
-  flex: 1; padding: 6px 10px;
+  flex: 1; padding: 8px 12px;
   background: rgba(255,255,255,0.04);
   border: 0.5px solid rgba(201,168,76,0.25);
   border-radius: 6px;
-  color: var(--cream); font-size: 12px;
+  color: var(--cream); font-size: 13px;
   font-family: 'Noto Serif TC', serif;
   outline: none; transition: border-color 0.2s;
 }
@@ -488,11 +530,11 @@ body::before {
 .food-input-row input::placeholder { color: rgba(240,230,204,0.25); }
 
 .btn-add {
-  padding: 6px 11px;
+  padding: 8px 13px;
   background: rgba(201,168,76,0.1);
   border: 0.5px solid rgba(201,168,76,0.4);
   border-radius: 6px;
-  color: var(--gold); font-size: 15px; line-height: 1;
+  color: var(--gold); font-size: 16px; line-height: 1;
   cursor: pointer; transition: all 0.2s;
   font-family: sans-serif;
 }
@@ -507,8 +549,8 @@ body::before {
 .btn-add:hover { background: rgba(201,168,76,0.2); box-shadow: 0 0 12px var(--gold-glow); }
 
 .food-tags {
-  display: flex; flex-wrap: wrap; gap: 4px;
-  max-height: 100px; overflow-y: auto;
+  display: flex; flex-wrap: wrap; gap: 5px;
+  max-height: 180px; overflow-y: auto;
 }
 
 @media(max-width: 768px) {
@@ -519,9 +561,9 @@ body::before {
 }
 
 .food-tag {
-  display: inline-flex; align-items: center; gap: 4px;
-  padding: 3px 8px; border-radius: 99px;
-  font-size: 10px; font-weight: 300;
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 10px; border-radius: 99px;
+  font-size: 11px; font-weight: 300;
   border: 0.5px solid rgba(201,168,76,0.3);
   background: rgba(201,168,76,0.07);
   color: var(--cream-dim);
@@ -537,7 +579,7 @@ body::before {
 }
 
 .food-tag:hover { border-color: rgba(201,168,76,0.6); color: var(--cream); }
-.tag-del { cursor: pointer; color: rgba(201,168,76,0.4); font-size: 9px; transition: color 0.15s; }
+.tag-del { cursor: pointer; color: rgba(201,168,76,0.4); font-size: 10px; transition: color 0.15s; }
 
 @media(max-width: 768px) {
   .tag-del {
@@ -548,12 +590,12 @@ body::before {
 .tag-del:hover { color: var(--gold); }
 
 .btn-reset {
-  margin-top: 0.5rem;
-  width: 100%; padding: 5px;
+  margin-top: 0.6rem;
+  width: 100%; padding: 6px;
   background: transparent;
   border: 0.5px solid rgba(201,168,76,0.15);
   border-radius: 6px;
-  color: rgba(201,168,76,0.4); font-size: 9px; letter-spacing: 0.1em;
+  color: rgba(201,168,76,0.4); font-size: 10px; letter-spacing: 0.1em;
   cursor: pointer; font-family: 'Noto Serif TC', serif;
   transition: all 0.2s;
 }
@@ -571,6 +613,30 @@ body::before {
 /* ══════════════════════════════
    MESSAGE MODAL (手機版)
 ══════════════════════════════ */
+/* 桌面版隱藏手機版 modal */
+.msg-modal {
+  display: none;
+}
+
+/* 手機版才顯示 */
+@media(max-width: 768px) {
+  .msg-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 9998;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    backdrop-filter: blur(8px);
+    animation: modalFadeIn 0.3s ease;
+  }
+  
+  .msg-modal.show {
+    display: flex;
+  }
+
 @media(max-width: 768px) {
   .msg-modal {
     display: none;
@@ -627,12 +693,13 @@ body::before {
     min-height: 200px;
   }
 }
+}
 
 /* ══════════════════════════════
    SOCIAL SECTION
 ══════════════════════════════ */
 .social-section {
-  padding: 0.8rem 1rem;
+  padding: 0.5rem 1rem 0.8rem;
   text-align: center;
   flex-shrink: 0;
 }
@@ -902,15 +969,15 @@ body::before {
 <section class="main-content">
   <div class="content-container">
     
-    <!-- ──────── 桌面版佈局 (三欄) ──────── -->
+    <!-- ──────── 桌面版佈局 (兩欄) ──────── -->
     <div class="desktop-layout">
+      
       <!-- 左側:食物輸入 -->
       <div class="panel-left">
         <div class="glass-panel">
           <span class="panel-label">✦ 我想吃的</span>
           <div class="food-input-row">
-            <input id="food-input" type="text" placeholder="輸入食物名稱…" maxlength="12"
-              onkeydown="if(event.key==='Enter') addFood()" />
+            <input id="food-input" type="text" placeholder="輸入食物名稱…" maxlength="12" onkeydown="if(event.key==='Enter') addFood()" />
             <button class="btn-add" onclick="addFood()" title="新增">＋</button>
           </div>
           <div class="food-tags" id="food-tags"></div>
@@ -918,7 +985,7 @@ body::before {
         </div>
       </div>
 
-      <!-- 中間:轉盤 -->
+      <!-- 右側:轉盤+結果+按鈕 -->
       <div class="panel-center">
         <div class="wheel-frame" id="wheel-frame">
           <div class="wheel-ring"></div>
@@ -928,7 +995,13 @@ body::before {
               <polygon points="12,26 2,6 12,10 22,6" fill="none" stroke="rgba(255,220,100,0.4)" stroke-width="1"/>
             </svg>
           </div>
-          <canvas id="wheel-canvas" width="240" height="240"></canvas>
+          <canvas id="wheel-canvas" width="280" height="280"></canvas>
+        </div>
+
+        <div class="result-display">
+          <div class="result-sticker" id="result-sticker">✨</div>
+          <div class="result-message" id="result-message">按下旋轉<br>讓命運替你決定今天的餐點</div>
+          <div class="result-food" id="result-food"></div>
         </div>
 
         <div class="btn-row">
@@ -937,22 +1010,11 @@ body::before {
         </div>
       </div>
 
-      <!-- 右側:訊息框 -->
-      <div class="panel-right">
-        <div class="msg-panel" id="msg-panel">
-          <div class="sticker-area" id="sticker-area">
-            <img class="sticker-img" id="sticker-img" src="" alt="" />
-            <span class="sticker-emoji" id="sticker-emoji">✨</span>
-          </div>
-          <p class="msg-text" id="msg-text">按下旋轉<br>讓命運替你決定今天的餐點</p>
-          <div class="msg-result" id="msg-result" style="display:none"></div>
-        </div>
-      </div>
     </div>
 
     <!-- ──────── 手機版佈局 (分頁) ──────── -->
     <div class="mobile-layout">
-      <!-- 第一頁：轉盤 -->
+      
       <div class="mobile-wheel-page">
         <div class="panel-center">
           <div class="wheel-frame" id="wheel-frame-mobile">
@@ -973,14 +1035,12 @@ body::before {
         </div>
       </div>
 
-      <!-- 第二頁：設定 -->
       <div class="mobile-settings-page">
         <div class="mobile-settings-container">
           <div class="glass-panel">
             <span class="panel-label">✦ 我想吃的</span>
             <div class="food-input-row">
-              <input id="food-input-mobile" type="text" placeholder="輸入食物名稱…" maxlength="12"
-                onkeydown="if(event.key==='Enter') addFood()" />
+              <input id="food-input-mobile" type="text" placeholder="輸入食物名稱…" maxlength="12" onkeydown="if(event.key==='Enter') addFood()" />
               <button class="btn-add" onclick="addFood()" title="新增">＋</button>
             </div>
             <div class="food-tags" id="food-tags-mobile"></div>
@@ -988,6 +1048,7 @@ body::before {
           </div>
         </div>
       </div>
+
     </div>
 
   </div>
@@ -1054,17 +1115,14 @@ body::before {
   </div>
 </div>
 
-</div><!-- .page -->
+</div>
 
 <script>
-/* ══════════════════════════════
-   設定區
-══════════════════════════════ */
 const STICKERS = {
-  idle:   { img: '',                emoji: '✨' },
-  spin:   { img: 'stickers/spin.gif',   emoji: '🌀' },
-  result: { img: 'stickers/result.gif', emoji: '🎉' },
-  eat:    { img: 'stickers/eat.gif',    emoji: '🥳' },
+  idle:   '✨',
+  spin:   '🌀',
+  result: '🎉',
+  eat:    '🥳',
 };
 const AUDIO = {
   spin:   'sounds/spinning.mp3',
@@ -1077,11 +1135,6 @@ const TTS = {
   eat:    '感謝世界感謝自己,今天我也好好吃飯,我好棒!',
 };
 
-const EATING_VIDEO = 'eating.mp4';
-
-/* ══════════════════════════════
-   轉盤顏色
-══════════════════════════════ */
 const WHEEL_COLORS = [
   ['#3d2e0a','#e8c97a'],['#1a1508','#c9a84c'],
   ['#4a380c','#f5e6b8'],['#251c07','#e8c97a'],
@@ -1097,7 +1150,6 @@ let spinning = false;
 let currentAngle = 0;
 let result = null;
 
-/* ── 音訊 ── */
 const audioCache = {};
 function playAudio(key) {
   const src = AUDIO[key];
@@ -1118,52 +1170,41 @@ function useTTS(key) {
   window.speechSynthesis.speak(u);
 }
 
-/* ── 貼圖切換 ── */
-function setSticker(key) {
-  const cfg = STICKERS[key] || STICKERS.idle;
+function setResult(type, message, foodName) {
+  const stickerEl = document.getElementById('result-sticker');
+  const messageEl = document.getElementById('result-message');
+  const foodEl = document.getElementById('result-food');
   
-  // 桌面版
-  const area = document.getElementById('sticker-area');
-  const img  = document.getElementById('sticker-img');
-  const emoji= document.getElementById('sticker-emoji');
-  
-  // 手機版
-  const areaMobile = document.getElementById('sticker-area-mobile');
-  const imgMobile  = document.getElementById('sticker-img-mobile');
-  const emojiMobile= document.getElementById('sticker-emoji-mobile');
-  
-  function updateSticker(areaEl, imgEl, emojiEl) {
-    if (!areaEl) return;
-    areaEl.classList.remove('animate');
-    void areaEl.offsetWidth;
-    areaEl.classList.add('animate');
-    if (cfg.img) {
-      imgEl.src = cfg.img + '?t=' + Date.now();
-      imgEl.style.display = 'block';
-      emojiEl.style.display = 'none';
-    } else {
-      emojiEl.textContent = cfg.emoji;
-      emojiEl.style.display = 'block';
-      imgEl.style.display = 'none';
+  if (stickerEl) {
+    stickerEl.classList.remove('animate');
+    void stickerEl.offsetWidth;
+    
+    // 判斷是否為 result 狀態,顯示 GIF 圖片
+    if (type === 'result') {
+      stickerEl.innerHTML = '<img src="stickers/result.gif" style="width: 80px; height: 80px; display: block;">';
+      stickerEl.classList.add('animate');
+    } 
+    // 其他狀態顯示 emoji
+    else {
+      const emoji = STICKERS[type] || type;
+      stickerEl.textContent = emoji;
+      if (emoji !== '✨') stickerEl.classList.add('animate');
     }
   }
   
-  updateSticker(area, img, emoji);
-  updateSticker(areaMobile, imgMobile, emojiMobile);
+  if (messageEl) messageEl.innerHTML = message;
+  
+  if (foodEl) {
+    if (foodName) {
+      foodEl.textContent = foodName;
+      foodEl.classList.add('show');
+    } else {
+      foodEl.classList.remove('show');
+    }
+  }
 }
 
-/* ── 訊息 ── */
-function setMsg(text, resultName) {
-  // 桌面版
-  const msgText = document.getElementById('msg-text');
-  const msgResult = document.getElementById('msg-result');
-  if (msgText) msgText.innerHTML = text;
-  if (msgResult) {
-    if (resultName) { msgResult.textContent = resultName; msgResult.style.display = 'block'; }
-    else msgResult.style.display = 'none';
-  }
-  
-  // 手機版
+function setMobileMsg(text, resultName) {
   const msgTextMobile = document.getElementById('msg-text-mobile');
   const msgResultMobile = document.getElementById('msg-result-mobile');
   if (msgTextMobile) msgTextMobile.innerHTML = text;
@@ -1173,7 +1214,32 @@ function setMsg(text, resultName) {
   }
 }
 
-/* ── 訊息 Modal (手機版) ── */
+function setMobileSticker(type) {
+  const areaMobile = document.getElementById('sticker-area-mobile');
+  const emojiMobile = document.getElementById('sticker-emoji-mobile');
+  const imgMobile = document.getElementById('sticker-img-mobile');
+  
+  if (areaMobile && emojiMobile && imgMobile) {
+    areaMobile.classList.remove('animate');
+    void areaMobile.offsetWidth;
+    
+    // result 狀態顯示 GIF 圖片
+    if (type === 'result') {
+      emojiMobile.style.display = 'none';
+      imgMobile.src = 'stickers/result.gif';
+      imgMobile.style.display = 'block';
+      areaMobile.classList.add('animate');
+    } 
+    // 其他狀態顯示 emoji
+    else {
+      imgMobile.style.display = 'none';
+      emojiMobile.textContent = STICKERS[type] || type;
+      emojiMobile.style.display = 'block';
+      if (type !== 'idle') areaMobile.classList.add('animate');
+    }
+  }
+}
+
 function showMsgModal() {
   if (window.innerWidth <= 768) {
     const modal = document.getElementById('msg-modal-mobile');
@@ -1192,14 +1258,11 @@ function closeMsgModal() {
   }
 }
 
-/* ── 轉盤繪製 ── */
 const canvas = document.getElementById('wheel-canvas');
 const canvasMobile = document.getElementById('wheel-canvas-mobile');
 
 function drawWheel() {
-  // 桌面版
-  if (canvas) drawOnCanvas(canvas, 240);
-  // 手機版
+  if (canvas) drawOnCanvas(canvas, 280);
   if (canvasMobile) drawOnCanvas(canvasMobile, 280);
 }
 
@@ -1230,7 +1293,7 @@ function drawOnCanvas(cvs, size) {
     ctx.translate(CX, CY); ctx.rotate(start + arc/2);
     ctx.fillStyle = fg;
     const label = foods[i];
-    const fs = label.length > 6 ? 10 : label.length > 4 ? 12 : 14;
+    const fs = label.length > 6 ? 11 : label.length > 4 ? 13 : 15;
     ctx.font = `400 ${fs}px "Noto Serif TC", serif`;
     ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
     ctx.fillText(label, R - 10, 0);
@@ -1243,13 +1306,10 @@ function drawOnCanvas(cvs, size) {
   ctx.fillText('✦', CX, CY);
 }
 
-/* ── 食物管理 ── */
 function renderTags() {
-  // 桌面版
   const c = document.getElementById('food-tags');
   if (c) renderTagsOnElement(c);
   
-  // 手機版
   const cMobile = document.getElementById('food-tags-mobile');
   if (cMobile) renderTagsOnElement(cMobile);
 }
@@ -1270,15 +1330,22 @@ function addFood() {
   const inp = document.getElementById('food-input') || document.getElementById('food-input-mobile');
   const v = inp.value.trim();
   if (!v) return;
-  if (foods.length >= 12) { setMsg('最多 12 個選項喔!'); return; }
-  if (foods.includes(v)) { setMsg('已經有這個了!'); return; }
+  if (foods.length >= 12) { 
+    setResult(STICKERS.idle, '最多 12 個選項喔!'); 
+    setMobileMsg('最多 12 個選項喔!');
+    return; 
+  }
+  if (foods.includes(v)) { 
+    setResult(STICKERS.idle, '已經有這個了!'); 
+    setMobileMsg('已經有這個了!');
+    return; 
+  }
   foods.push(v); inp.value = '';
   renderTags(); drawWheel();
 }
 function removeFood(i) { foods.splice(i,1); renderTags(); drawWheel(); }
 function resetDefault() { foods = [...DEFAULT_FOODS]; renderTags(); drawWheel(); }
 
-/* ── 旋轉 ── */
 function spin() {
   if (spinning || foods.length < 2) return;
   spinning = true;
@@ -1297,8 +1364,9 @@ function spin() {
   
   result = null;
 
-  setSticker('spin');
-  setMsg('今天要吃什麼呢?\n要吃香噴噴的白飯還是肉肉料理呢?\n香酥的炸物也很吸引人呢!');
+  setResult(STICKERS.spin, '今天要吃什麼呢?\n要吃香噴噴的白飯還是肉肉料理呢?\n香酥的炸物也很吸引人呢!');
+  setMobileSticker(STICKERS.spin);
+  setMobileMsg('今天要吃什麼呢?\n要吃香噴噴的白飯還是肉肉料理呢?\n香酥的炸物也很吸引人呢!');
   playAudio('spin');
 
   const extra = (Math.PI*2) * (6 + Math.random()*4);
@@ -1322,31 +1390,27 @@ function spin() {
 
     const n = foods.length;
     const arc = (Math.PI*2) / n;
-    // 指針固定在頂部(-Math.PI/2)，計算哪個扇形在這個位置
-    // 扇形 i 的起始角度是 currentAngle + arc*i - Math.PI/2
-    // 我們要找到 -Math.PI/2 落在哪個扇形中
     const adjustedAngle = (-currentAngle) % (Math.PI * 2);
     const positiveAngle = ((adjustedAngle % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
     const index = Math.floor(positiveAngle / arc) % n;
     result = foods[index];
 
-
-    setSticker('result');
-    setMsg('決定今天吃這個!', result);
+    setResult('result', '決定今天吃這個!', result);
+    setMobileSticker("result");
+    setMobileMsg('決定今天吃這個!', result);
     playAudio('result');
     
     if (eatBtn) eatBtn.style.display = 'inline-block';
     if (eatBtnMobile) eatBtnMobile.style.display = 'inline-block';
     
-    // 手機版顯示訊息 modal
     showMsgModal();
   })(performance.now());
 }
 
-/* ── 開動 ── */
 function eat() {
-  setSticker('eat');
-  setMsg('感謝世界感謝自己,\n今天我也好好吃飯,\n我好棒!');
+  setResult(STICKERS.eat, '感謝世界感謝自己,\n今天我也好好吃飯,\n我好棒!');
+  setMobileSticker(STICKERS.eat);
+  setMobileMsg('感謝世界感謝自己,\n今天我也好好吃飯,\n我好棒!');
   playAudio('eat');
 
   const modal = document.getElementById('modal-overlay');
@@ -1359,7 +1423,6 @@ function eat() {
   document.body.style.overflow = 'hidden';
 }
 
-/* ── 關閉 Modal ── */
 function closeModal(event) {
   if (!event || event.target.id === 'modal-overlay' || event.target.classList.contains('modal-close')) {
     const modal = document.getElementById('modal-overlay');
@@ -1378,7 +1441,6 @@ document.addEventListener('keydown', function(e) {
   }
 });
 
-/* 初始化 */
 window.speechSynthesis && window.speechSynthesis.getVoices();
 renderTags();
 drawWheel();
